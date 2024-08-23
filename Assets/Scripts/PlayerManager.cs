@@ -19,6 +19,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 	private PhotonView _photonView;
 	private NicknamesScript _nicknamesScript;
 	private PlayerMovement _playerMovement;
+	private Timer _timer;
+	private Animator _animator;
 	
 	private GameObject namesObject;
 	private GameObject waitForPlayers;
@@ -29,6 +31,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 		waitForPlayers = GameObject.Find("WaitingBackground");
 		_nicknamesScript = namesObject.GetComponent<NicknamesScript>();
 		_playerMovement = GetComponent<PlayerMovement>();
+		_timer = namesObject.GetComponent<Timer>();
+		_animator = GetComponent<Animator>();
+		
 		InitializeSettings();
 	}
 
@@ -41,12 +46,11 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 
 	private void Update(){
 		HandleEscapeKey();
-
 		HandleHitState();
 	}
 
 	private void HandleHitState(){
-		if (this.GetComponent<Animator>().GetBool("isHit")) {
+		if (_animator.GetBool("isHit")) {
 			StartCoroutine(Recover());
 		}
 	}
@@ -64,13 +68,18 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 	}
 
 	void CheckTime(){
-		if (namesObject.GetComponent<Timer>().timeStop) {
-			this.gameObject.GetComponent<PlayerMovement>().isDead = true;
-			this.gameObject.GetComponent<PlayerMovement>().gameOver = true;
-			this.gameObject.GetComponent<WeaponChange>().isDead = true;
-			this.gameObject.GetComponentInChildren<AimLookAtRef>().isDead = true;
-			this.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+		if (_timer.timeStop) {
+			_playerMovement.gameOver = true;
+			_playerMovement.isDead = true;
+			
+			SetPlayerDeadState(true);
 		}
+	}
+
+	private void SetPlayerDeadState(bool isDead){
+		gameObject.GetComponent<WeaponChange>().isDead = isDead;
+		gameObject.GetComponentInChildren<AimLookAtRef>().isDead = isDead;
+		gameObject.layer = (isDead)?LayerMask.NameToLayer("Ignore Raycast") : LayerMask.NameToLayer("Default");
 	}
 
 	public void Respawn(string name){
@@ -79,14 +88,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 
 	[PunRPC]
 	void ResetForReplay(string name){
-		for (int i = 0; i < namesObject.GetComponent<NicknamesScript>().names.Length; i++) {
-			if (name == namesObject.GetComponent<NicknamesScript>().names[i].text) {
-				this.GetComponent<Animator>().SetBool("isDead", false);
-				this.gameObject.GetComponent<WeaponChange>().isDead = false;
-				this.gameObject.GetComponentInChildren<AimLookAtRef>().isDead = false;
-				this.gameObject.layer = LayerMask.NameToLayer("Default");
-				namesObject.GetComponent<NicknamesScript>().healthbars[i].gameObject.GetComponent<Image>().fillAmount =
-					1;
+		for (int i = 0; i < _nicknamesScript.names.Length; i++) {
+			if (name == _nicknamesScript.names[i].text) {
+				_animator.SetBool("isDead", false);
+				
+				SetPlayerDeadState(false);
+				
+				_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount = 1;
 			}
 		}
 	}
@@ -97,22 +105,21 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 
 	[PunRPC]
 	void GunDamage(string shooterName, string name, float damageAmount){
-		for (int i = 0; i < namesObject.GetComponent<NicknamesScript>().names.Length; i++) {
-			if (name == namesObject.GetComponent<NicknamesScript>().names[i].text) {
-				if (namesObject.GetComponent<NicknamesScript>().healthbars[i].gameObject.GetComponent<Image>()
+		for (int i = 0; i < _nicknamesScript.names.Length; i++) {
+			if (name == _nicknamesScript.names[i].text) {
+				if (_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>()
 					    .fillAmount > 0.1f) {
-					this.GetComponent<Animator>().SetBool("isHit", true);
-					namesObject.GetComponent<NicknamesScript>().healthbars[i].gameObject.GetComponent<Image>().fillAmount -= damageAmount;
+					_animator.SetBool("isHit", true);
+					_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount -= damageAmount;
 					return;
 				}
-				namesObject.GetComponent<NicknamesScript>().healthbars[i].gameObject.GetComponent<Image>().fillAmount =
-					0;
-				this.GetComponent<Animator>().SetBool("isDead", true);
-				this.gameObject.GetComponent<PlayerMovement>().isDead = true;
-				this.gameObject.GetComponent<WeaponChange>().isDead = true;
-				this.gameObject.GetComponentInChildren<AimLookAtRef>().isDead = true;
-				namesObject.GetComponent<NicknamesScript>().RunMessage(shooterName, name);
-				this.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+				_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount = 0;
+				_animator.SetBool("isDead", true);
+				
+				_playerMovement.isDead = true;
+				_nicknamesScript.RunMessage(shooterName, name);
+				
+				SetPlayerDeadState(true);
 			}
 		}
 	}
@@ -123,7 +130,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 
 	private IEnumerator GetReadyToLeave(){
 		yield return new WaitForSeconds(1);
-		namesObject.GetComponent<NicknamesScript>().Leaving();
+		_nicknamesScript.Leaving();
 		Cursor.visible = true;
 		PhotonNetwork.LeaveRoom();
 	}
@@ -142,10 +149,11 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 
 	[PunRPC]
 	void PlaySound(string name, int weaponNumber){
-		for (int i = 0; i < namesObject.GetComponent<NicknamesScript>().names.Length; i++) {
-			if (name == namesObject.GetComponent<NicknamesScript>().names[i].text) {
-				GetComponent<AudioSource>().clip = gunshotSounds[weaponNumber];
-				GetComponent<AudioSource>().Play();
+		for (int i = 0; i < _nicknamesScript.names.Length; i++) {
+			if (name == _nicknamesScript.names[i].text) {
+				AudioSource audioSource = GetComponent<AudioSource>();
+				audioSource.clip = gunshotSounds[weaponNumber];
+				audioSource.Play();
 				return; // this was added
 			}
 		}
@@ -155,28 +163,27 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 	void AssignColor(){
 		for (int i = 0; i < viewID.Length; i++) {
 			if (_photonView.ViewID == viewID[i]) {
-				this.transform.GetChild(1).GetComponent<Renderer>().material.color = (!teamMode) ? colors[i] : teamColors[i];
-				namesObject.GetComponent<NicknamesScript>().names[i].gameObject.SetActive(true);
-				namesObject.GetComponent<NicknamesScript>().healthbars[i].gameObject.SetActive(true);
-				namesObject.GetComponent<NicknamesScript>().names[i].text = _photonView.Owner.NickName;
+				transform.GetChild(1).GetComponent<Renderer>().material.color = (!teamMode) ? colors[i] : teamColors[i];
+				_nicknamesScript.names[i].text = _photonView.Owner.NickName;
+				_nicknamesScript.healthbars[i].gameObject.SetActive(true);
+				_nicknamesScript.names[i].gameObject.SetActive(true);
 			}	
 		}
 	}
 
 	[PunRPC]
 	void RemoveMe(){
-		for (int i = 0; i < namesObject.gameObject.GetComponent<NicknamesScript>().names.Length; i++) {
-			if (_photonView.Owner.NickName ==
-			    namesObject.GetComponent<NicknamesScript>().names[i].text) {
-				namesObject.GetComponent<NicknamesScript>().names[i].gameObject.SetActive(false);
-				namesObject.GetComponent<NicknamesScript>().healthbars[i].gameObject.SetActive(false);
+		for (int i = 0; i < _nicknamesScript.names.Length; i++) {
+			if (_photonView.Owner.NickName == _nicknamesScript.names[i].text) {
+				_nicknamesScript.healthbars[i].gameObject.SetActive(false);
+				_nicknamesScript.names[i].gameObject.SetActive(false);
 			}
 		}
 	}
 
 	IEnumerator Recover(){
 		yield return new WaitForSeconds(0.03f);
-		this.GetComponent<Animator>().SetBool("isHit", false);
+		_animator.SetBool("isHit", false);
 	}
 
 	IEnumerator WaitToExit(){

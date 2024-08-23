@@ -35,10 +35,11 @@ public class ColorButtonScript : MonoBehaviour
     void SelectedColor(int buttonNumber, int myID){
         players = GameObject.FindGameObjectsWithTag("Player");
         for (int i = 0; i < players.Length; i++) {
+            // Assign ID and color to player
             players[i].GetComponent<PlayerManager>().viewID[buttonNumber] = myID;
             players[i].GetComponent<PlayerManager>().ChooseColor();
         }
         namesBGObject.GetComponent<Timer>().BeginTimer();
-        this.transform.gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
 }

@@ -39,7 +39,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        //Debug.Log("I'm connected to the server!");
         SceneManager.LoadScene("Lobby");
     }
 

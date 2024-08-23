@@ -24,6 +24,6 @@ public class PlayerJoinedCheck : MonoBehaviour{
     }
 
     public void EnterTheArena(){
-        this.gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
 }

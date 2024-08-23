@@ -8,15 +8,20 @@ using Photon.Pun;
 public class NicknamesScript : MonoBehaviourPunCallbacks{
 	public Text[] names;
 	public Image[] healthbars;
-	private GameObject waitCanvasObject;
 	public GameObject displayPanel;
 	public Text messageText;
 	public int[] kills;
 	public bool teamMode = false;
 	public bool noRespawn = false;
 	public GameObject eliminationPanel;
+	
+	private GameObject waitCanvasObject;
+	private PhotonView _photonView; 
+	
+	
 
 	private void Start(){
+		_photonView = GetComponent<PhotonView>();
 		if (noRespawn) {
 			eliminationPanel.SetActive(false);
 		}
@@ -48,7 +53,7 @@ public class NicknamesScript : MonoBehaviourPunCallbacks{
 	}
 
 	public void RunMessage(string win, string lose){
-		this.GetComponent<PhotonView>().RPC("DisplayMessage", RpcTarget.All, win, lose);
+		_photonView.RPC("DisplayMessage", RpcTarget.All, win, lose);
 		UpdateKills(win);
 	}
 
@@ -69,7 +74,7 @@ public class NicknamesScript : MonoBehaviourPunCallbacks{
 
 	IEnumerator SwitchOffMessage(){
 		yield return new WaitForSeconds(3f);
-		this.GetComponent<PhotonView>().RPC("MessageOff", RpcTarget.All);
+		_photonView.RPC("MessageOff", RpcTarget.All);
 	}
 
 	[PunRPC]

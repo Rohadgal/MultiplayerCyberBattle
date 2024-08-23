@@ -5,27 +5,26 @@ using Photon.Pun;
 
 public class AimLookAtRef : MonoBehaviour
 {
-    private GameObject LookAtObject;
+    private GameObject _LookAtObject;
 
     public bool isDead = false;
     
-    private float xRotation = 0f;
+
+    private PhotonView _photonView;
   
     void Start()
     {
-        LookAtObject = GameObject.Find("AimRef");
+        _LookAtObject = GameObject.Find("AimRef");
+        _photonView = gameObject.GetComponentInParent<PhotonView>();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
         
-        if (this.gameObject.GetComponentInParent<PhotonView>().IsMine && !isDead)
+        if (_photonView.IsMine && !isDead) // this changed in photonview var
         { 
-            // float mouseY = Input.GetAxis("Mouse Y") * 300f;
-            // xRotation -= mouseY;
-            // xRotation = Mathf.Clamp(xRotation, -30f, 30f);
-            this.transform.position = LookAtObject.transform.position; //+ new Vector3(0,xRotation,0);
+            transform.position = _LookAtObject.transform.position; 
         }
     }
 }
