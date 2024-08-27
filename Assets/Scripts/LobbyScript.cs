@@ -10,9 +10,9 @@ using Random = UnityEngine.Random;
 
 public class LobbyScript : MonoBehaviourPunCallbacks
 {
-    private TypedLobby killCount = new TypedLobby("killCount", LobbyType.Default);
-    private TypedLobby teamBattle = new TypedLobby("teamBattle", LobbyType.Default);
-    private TypedLobby noRespawn = new TypedLobby("noRespawn", LobbyType.Default);
+    private TypedLobby _killCount = new TypedLobby("killCount", LobbyType.Default);
+    private TypedLobby _teamBattle = new TypedLobby("teamBattle", LobbyType.Default);
+    private TypedLobby _noRespawn = new TypedLobby("noRespawn", LobbyType.Default);
 
     public GameObject roomNumber;
     private string levelName = "";
@@ -29,19 +29,19 @@ public class LobbyScript : MonoBehaviourPunCallbacks
 
     public void JoinGameKillCount(){
         levelName = "KillCount";
-        PhotonNetwork.JoinLobby(killCount);
+        PhotonNetwork.JoinLobby(_killCount);
     }
     
     public void JoinTeamBattle()
     {
         levelName = "TeamBattle";
-        PhotonNetwork.JoinLobby(teamBattle);
+        PhotonNetwork.JoinLobby(_teamBattle);
     }
     
     public void JoinNoRespawn()
     {
         levelName = "NoRespawn";
-        PhotonNetwork.JoinLobby(noRespawn);
+        PhotonNetwork.JoinLobby(_noRespawn);
     }
 
     public override void OnJoinedLobby(){
@@ -49,7 +49,7 @@ public class LobbyScript : MonoBehaviourPunCallbacks
     }
 
     public override void OnJoinRandomFailed(short returnCode, string message){
-        Debug.Log("Joined random room failed, creating a new room");
+        //Debug.Log("Joined random room failed, creating a new room");
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = 6;
         roomOptions.IsVisible = true;

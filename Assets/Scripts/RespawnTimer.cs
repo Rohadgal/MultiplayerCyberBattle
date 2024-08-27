@@ -11,12 +11,16 @@ public class RespawnTimer : MonoBehaviour{
     }
 
     IEnumerator SpawnStarting(){
-        spawnTime.text = "3";
-        yield return new WaitForSeconds(1f);
-        spawnTime.text = "2";
-        yield return new WaitForSeconds(1f);
-        spawnTime.text = "1";
-        yield return new WaitForSeconds(1f);
-        this.gameObject.SetActive(false);
+        for (int i = 3; i > 0; i--) {
+            spawnTime.text = i.ToString();
+            yield return new WaitForSeconds(1f);
+        }
+        // spawnTime.text = "3";
+        // yield return new WaitForSeconds(1f);
+        // spawnTime.text = "2";
+        // yield return new WaitForSeconds(1f);
+        // spawnTime.text = "1";
+        // yield return new WaitForSeconds(1f);
+        gameObject.SetActive(false);
     }
 }

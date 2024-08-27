@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
@@ -10,37 +7,27 @@ public class GameManager : MonoBehaviourPunCallbacks
     public InputField playerNickname;
     private string setName = "";
     public GameObject connectingTextGO;
-    private void Start()
-    {
+    private void Start(){
         connectingTextGO.SetActive(false);
     }
 
-    public void UpdateText()
-    {
+    public void UpdateText(){
         setName = playerNickname.text;
         PhotonNetwork.LocalPlayer.NickName = setName;
     }
-    public void EnterButton()
-    {
-        //UpdateText();
-        
-        if (setName != "")
-        {
+    public void EnterButton(){
+        if (setName != "") {
             //PhotonNetwork.AutomaticallySyncScene = true;
             PhotonNetwork.ConnectUsingSettings();
             connectingTextGO.SetActive(true);
         }
     }
 
-    public void ExitButton()
-    {
+    public void ExitButton(){
         Application.Quit();
     }
 
-    public override void OnConnectedToMaster()
-    {
+    public override void OnConnectedToMaster(){
         SceneManager.LoadScene("Lobby");
     }
-
-    
 }

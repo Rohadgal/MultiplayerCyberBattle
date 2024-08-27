@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 public class Descriptions : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
@@ -23,9 +21,4 @@ public class Descriptions : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         dropdown.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

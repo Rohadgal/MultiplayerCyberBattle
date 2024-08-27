@@ -8,7 +8,7 @@ public class KillCount : MonoBehaviour{
     public Text[] killAmounts;
     private GameObject killCountPanel;
     private GameObject namesObject;
-    private bool killCountOn = false;
+   // private bool killCountOn = false;
     public bool countDown = true;
     public GameObject winnerPanel;
     public Text winnerText;
@@ -25,36 +25,38 @@ public class KillCount : MonoBehaviour{
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.T) && countDown) {
-            
-            if (!killCountOn) {
-                killCountPanel.SetActive(true);
-                killCountOn = true;
-                highestKills.Clear();
-                for (int i = 0; i < names.Length; i++) {
-                    highestKills.Add(new Kills(_nicknamesScript.names[i].text,_nicknamesScript.kills[i]));
-                   // Debug.Log(highestKills[i].playerName);
-                }
-                highestKills.Sort();
-                for (int i = 0; i < names.Length; i++) {
-                    names[i].text = highestKills[i].playerName;
-                    killAmounts[i].text = highestKills[i].playerKills.ToString();
-                    if (names[i].text == "Name") {
-                        names[i].text = "";
-                        killAmounts[i].text = "";
-                    }
-                }
-                return;
+        if (!countDown) {
+            return;
+        }
+        if (Input.GetKeyDown(KeyCode.T)) {
+            killCountPanel.SetActive(true);
+            //killCountOn = true;
+            highestKills.Clear();
+            for (int i = 0; i < names.Length; i++) {
+                highestKills.Add(new Kills(_nicknamesScript.names[i].text,_nicknamesScript.kills[i]));
+               // Debug.Log(highestKills[i].playerName);
             }
+            highestKills.Sort();
+            for (int i = 0; i < names.Length; i++) {
+                names[i].text = highestKills[i].playerName;
+                killAmounts[i].text = highestKills[i].playerKills.ToString();
+                if (names[i].text == "Name") {
+                    names[i].text = "";
+                    killAmounts[i].text = "";
+                }
+            }
+        }
+
+        if (Input.GetKeyUp(KeyCode.T)) {
             killCountPanel.SetActive(false);
-            killCountOn = false;
+            //killCountOn = false;
         }
     }
 
     public void TimeOver(){
         killCountPanel.SetActive(true);
         winnerPanel.SetActive(true);
-        killCountOn = true;
+        //killCountOn = true;
         highestKills.Clear();
         for (int i = 0; i < names.Length; i++) {
             highestKills.Add(new Kills(namesObject.GetComponent<NicknamesScript>().names[i].text, namesObject.GetComponent<NicknamesScript>().kills[i]));

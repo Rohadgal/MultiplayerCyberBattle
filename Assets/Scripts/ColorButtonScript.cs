@@ -1,9 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
-using Unity.VisualScripting;
 
 public class ColorButtonScript : MonoBehaviour
 {
@@ -14,11 +10,14 @@ public class ColorButtonScript : MonoBehaviour
 
     private void Start(){
         Cursor.visible = true;
+        
         panel = GameObject.Find("ChoosePanel");
+        
         namesBGObject = GameObject.Find("NamesBackground");
     }
 
     public void SelectButton(int buttonNumber){
+        // Set my ID
         players = GameObject.FindGameObjectsWithTag("Player");
         for (int i = 0; i < players.Length; i++) {
             if (players[i].GetComponent<PhotonView>().IsMine) {
@@ -26,8 +25,11 @@ public class ColorButtonScript : MonoBehaviour
                 break;
             }
         }
+        
         GetComponent<PhotonView>().RPC("SelectedColor", RpcTarget.AllBuffered, buttonNumber, myID);
+        
         Cursor.visible = false;
+        
         panel.SetActive(false);
     }
 

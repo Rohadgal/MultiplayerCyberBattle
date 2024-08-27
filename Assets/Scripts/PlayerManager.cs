@@ -1,14 +1,15 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
-using Unity.VisualScripting;
 
 public class PlayerManager : MonoBehaviourPunCallbacks{
-	//public int[] buttonNumbers;
+
+	// public delegate void OnHit(float val, string name);
+	//
+	// public static OnHit onHit;
+	
 	public int[] viewID;
 	public Color32[] colors;
 	public Color32[] teamColors;
@@ -24,15 +25,33 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 	
 	private GameObject namesObject;
 	private GameObject waitForPlayers;
+
+	//[SerializeField]
+	//public BloodSplatter _bloodSplatter;
+	[SerializeField]
+	private GameObject _bloodGO;
+	[SerializeField]
+	private GameObject _redGO;
+	private Image _bloodSplatter;
+	private Image _redColor;
+
+	private float val;
+	
+	
 	
 	private void Start(){
-		_photonView = GetComponent<PhotonView>();
 		namesObject = GameObject.Find("NamesBackground");
 		waitForPlayers = GameObject.Find("WaitingBackground");
+		_photonView = GetComponent<PhotonView>();
 		_nicknamesScript = namesObject.GetComponent<NicknamesScript>();
 		_playerMovement = GetComponent<PlayerMovement>();
 		_timer = namesObject.GetComponent<Timer>();
 		_animator = GetComponent<Animator>();
+		
+		_bloodSplatter = _bloodGO.gameObject.GetComponent<Image>();
+		_redColor = _redGO.gameObject.GetComponent<Image>();
+		_bloodGO.gameObject.SetActive(false);
+		_redGO.gameObject.SetActive(false);
 		
 		InitializeSettings();
 	}
@@ -77,7 +96,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 	}
 
 	private void SetPlayerDeadState(bool isDead){
-		gameObject.GetComponent<WeaponChange>().isDead = isDead;
+		gameObject.GetComponent<WeaponManager>().isDead = isDead;
 		gameObject.GetComponentInChildren<AimLookAtRef>().isDead = isDead;
 		gameObject.layer = (isDead)?LayerMask.NameToLayer("Ignore Raycast") : LayerMask.NameToLayer("Default");
 	}
@@ -100,25 +119,32 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 	}
 
 	public void DeliverDamage(string shooterName, string name, float damageAmount){
-		_photonView.RPC("GunDamage", RpcTarget.AllBuffered, shooterName, name, damageAmount);	
+		_photonView.RPC("GunDamage", RpcTarget.AllBuffered, shooterName, name, damageAmount);
+		// for (int i = 0; i < _nicknamesScript.names.Length; i++) {
+		// 	if (name == _nicknamesScript.names[i].text) {
+		// 		//onHit?.Invoke(_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount,name);
+		// 		// _bloodSplatter.showDamage(_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount, name);
+		// 	}
+		// }
+		//showDamage(name);
 	}
 
 	[PunRPC]
 	void GunDamage(string shooterName, string name, float damageAmount){
 		for (int i = 0; i < _nicknamesScript.names.Length; i++) {
 			if (name == _nicknamesScript.names[i].text) {
-				if (_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>()
-					    .fillAmount > 0.1f) {
+				if (_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount > 0.1f) {
 					_animator.SetBool("isHit", true);
 					_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount -= damageAmount;
+					val = _nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount;
+					//onHit?.Invoke(_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount,name);
+					showDamage( name);
 					return;
 				}
 				_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount = 0;
 				_animator.SetBool("isDead", true);
-				
 				_playerMovement.isDead = true;
 				_nicknamesScript.RunMessage(shooterName, name);
-				
 				SetPlayerDeadState(true);
 			}
 		}
@@ -151,8 +177,10 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 	void PlaySound(string name, int weaponNumber){
 		for (int i = 0; i < _nicknamesScript.names.Length; i++) {
 			if (name == _nicknamesScript.names[i].text) {
+				// Play gunshotsound
 				AudioSource audioSource = GetComponent<AudioSource>();
 				audioSource.clip = gunshotSounds[weaponNumber];
+				audioSource.volume = .5f;
 				audioSource.Play();
 				return; // this was added
 			}
@@ -163,7 +191,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 	void AssignColor(){
 		for (int i = 0; i < viewID.Length; i++) {
 			if (_photonView.ViewID == viewID[i]) {
+				// Set player's color
 				transform.GetChild(1).GetComponent<Renderer>().material.color = (!teamMode) ? colors[i] : teamColors[i];
+				// Add name and healthbar to UI list
 				_nicknamesScript.names[i].text = _photonView.Owner.NickName;
 				_nicknamesScript.healthbars[i].gameObject.SetActive(true);
 				_nicknamesScript.names[i].gameObject.SetActive(true);
@@ -190,5 +220,29 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 		yield return new WaitForSeconds(3f);
 		RemoveMe();
 		RoomExit();
+	}
+	
+	public void showDamage(string name){
+		if (name == GetComponent<PhotonView>().Owner.NickName && GetComponent<PhotonView>().IsMine) {
+			if (_bloodSplatter is null || _redColor is null) {
+				Debug.LogError("Blood splatter or red color references are missing.");
+				return;
+			}
+			Debug.Log(name + " " + GetComponent<PhotonView>().Owner.NickName);
+			Color tempColBlood = _bloodSplatter.color;
+			Color tempColRed = _redColor.color;
+			tempColBlood.a = 1 - val;
+			tempColRed.a = 1 - val;
+			_bloodSplatter.color = tempColBlood;
+			_redColor.color = tempColRed;
+			_bloodGO.gameObject.SetActive(true);
+			_redGO.gameObject.SetActive(true);
+			StartCoroutine(HideImage());
+		}
+	}
+	IEnumerator HideImage(){
+		yield return new WaitForSeconds(0.3f);
+		_bloodGO.gameObject.SetActive(false);
+		_redGO.gameObject.SetActive(false);
 	}
 }

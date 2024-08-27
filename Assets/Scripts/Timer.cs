@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class Timer : MonoBehaviour{
     public Text minutesText;
     public Text secondsText;
-    public int minutes = 4;
+    public int minutes = 0;
     public int seconds = 20;
     public GameObject Canvas;
     [HideInInspector]
@@ -52,7 +52,7 @@ public class Timer : MonoBehaviour{
         }
 
         if (seconds == 0 && minutes <= 0) {
-            if (!this.gameObject.GetComponent<NicknamesScript>().teamMode) {
+            if (!gameObject.GetComponent<NicknamesScript>().teamMode) {
                 Canvas.GetComponent<KillCount>().countDown = false;
                 Canvas.GetComponent<KillCount>().TimeOver();
                 timeStop = true;
