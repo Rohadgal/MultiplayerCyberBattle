@@ -14,8 +14,8 @@ public class LookAtAim : MonoBehaviour
 
     private void Start(){
 	    // Draw crosshair on screen
-	    screenPosition = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f - 30f, 6f);   //Input.mousePosition;
-        crosshair.transform.position = screenPosition;
+	    screenPosition = new Vector3(Screen.width * 0.5f, (Screen.height * 0.5f) - 50f, 2f);   //Input.mousePosition; + 15f
+        crosshair.transform.position = new Vector3(screenPosition.x, screenPosition.y, 0);
     }
 
     void FixedUpdate(){

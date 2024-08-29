@@ -5950,7 +5950,6 @@ MonoBehaviour:
   isDead: 0
   gameOver: 0
   noRespawn: 0
-  aimPos: {fileID: 2331238094293506522}
 --- !u!114 &723406979054890757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7935,7 +7934,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2331238094293506522
 Transform:
   m_ObjectHideFlags: 0

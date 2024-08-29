@@ -120,13 +120,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 
 	public void DeliverDamage(string shooterName, string name, float damageAmount){
 		_photonView.RPC("GunDamage", RpcTarget.AllBuffered, shooterName, name, damageAmount);
-		// for (int i = 0; i < _nicknamesScript.names.Length; i++) {
-		// 	if (name == _nicknamesScript.names[i].text) {
-		// 		//onHit?.Invoke(_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount,name);
-		// 		// _bloodSplatter.showDamage(_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount, name);
-		// 	}
-		// }
-		//showDamage(name);
 	}
 
 	[PunRPC]
@@ -138,13 +131,15 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 					_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount -= damageAmount;
 					val = _nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount;
 					//onHit?.Invoke(_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount,name);
-					showDamage( name);
+					showDamage(name);
 					return;
 				}
 				_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount = 0;
+				val = 0;
 				_animator.SetBool("isDead", true);
 				_playerMovement.isDead = true;
 				_nicknamesScript.RunMessage(shooterName, name);
+				showDamage(name);
 				SetPlayerDeadState(true);
 			}
 		}
@@ -243,6 +238,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 	IEnumerator HideImage(){
 		yield return new WaitForSeconds(0.3f);
 		_bloodGO.gameObject.SetActive(false);
-		_redGO.gameObject.SetActive(false);
+		if (val == 0) {
+			_redGO.gameObject.SetActive(false);
+		}
 	}
 }

@@ -21,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
     private GameObject Canvas;
     private GameObject camObject;
     private CinemachineVirtualCamera cam;
-    public Transform aimPos;
+   // public Transform aimPos;
     
     private PhotonView _photonView;
     
