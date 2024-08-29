@@ -11,10 +11,6 @@ public class SpawnManager : MonoBehaviour
     public GameObject[] weapons;
     public Transform[] weaponSpawnPoints;
     
-   // public float weaponRespawnTime = 10;
-    
-    // Start is called before the first frame update
-
     private void OnEnable(){
         WeaponManager.OnNoWeaponsFound += SpawnWeaponStart;
     }
@@ -23,7 +19,7 @@ public class SpawnManager : MonoBehaviour
     }
 
     void Start(){
-       // _weaponChange = GameObject.Find("YBot(clone)").GetComponent<WeaponChange>();
+      
         if (PhotonNetwork.IsConnected)
         {
             int spawnIndex = PhotonNetwork.LocalPlayer.ActorNumber % spawnPoints.Length;

@@ -21,16 +21,12 @@ public class PlayerMovement : MonoBehaviour
     private GameObject Canvas;
     private GameObject camObject;
     private CinemachineVirtualCamera cam;
-   // public Transform aimPos;
     
     private PhotonView _photonView;
-    
-    //private float xRotation = 0f; // Current vertical rotation
 
     private void Awake(){
         respawnPanel = GameObject.Find("RespawnPanel");
         Canvas = GameObject.Find("Canvas");
-        //aimPos = transform;
     }
 
     void Start(){
@@ -43,15 +39,12 @@ public class PlayerMovement : MonoBehaviour
         if (_photonView.IsMine) {
             cam = camObject.GetComponent<CinemachineVirtualCamera>();
             cam.Follow = gameObject.transform;
-            //cam.LookAt = gameObject.transform;
-            //Invoke("SetLookAt", 0.1f);
         }
         else {
             enabled = false;
         }
     }
 
-    // Update is called once per frame
     void FixedUpdate(){
         if (!isDead) {
             MovementAndRotation();
@@ -59,16 +52,13 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void MovementAndRotation(){
-        //aimPos.position = Camera.main.ScreenToWorldPoint(Input.mousePosition); 
         respawnPanel.SetActive(false);
         Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;
             
         Vector3 rotateY = new Vector3(0, Input.GetAxis("Mouse X") * rotateSpeed * Time.deltaTime, 0);
-           //Mathf.Clamp(-Input.GetAxis("Mouse Y") * .3f, -15f,30f)
         _rb.MoveRotation(_rb.rotation * Quaternion.Euler(rotateY));
      
         _rb.MovePosition(_rb.position + (((transform.forward * movement.z) + (transform.right * movement.x)) * (moveSpeed * Time.deltaTime)));
-       // camObject.transform.position = Input.mousePosition.y;
         _anim.SetFloat("BlendVertical", movement.z);
         _anim.SetFloat("BlendHorizontal", movement.x);
     }

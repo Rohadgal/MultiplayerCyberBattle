@@ -16,8 +16,6 @@ public class BloodSplatter : MonoBehaviour{
 	//private NicknamesScript _nicknamesScript;
 
 	private void Start(){
-		//_bloodGO = GameObject.Find("BloodSplatter");
-		//_redGO = GameObject.Find("RedColor");
 		if (!_bloodGO || !_redGO) {
 			return;
 		}
@@ -27,19 +25,8 @@ public class BloodSplatter : MonoBehaviour{
 		_redGO.gameObject.SetActive(false);
 	}
 
-	// private void OnEnable(){
-	// 	PlayerManager.onHit += showDamage;
-	// }
-	//
-	// private void OnDisable(){
-	// 	PlayerManager.onHit -= showDamage;
-	// }
-
 	public void showDamage(float val, string name){
-		// if (name != transform.gameObject.GetComponent<PhotonView>().Owner.NickName) {
-		// 	return;
-		// }
-		//
+
 		if (_bloodSplatter is null || _redColor is null) {
 			Debug.LogError("Blood splatter or red color references are missing.");
 			return;

@@ -15,7 +15,7 @@ public class AimLookAtRef : MonoBehaviour{
     
     void FixedUpdate()
     {
-        if (_photonView.IsMine && !isDead) // this changed into _photonview var
+        if (_photonView.IsMine && !isDead)
         {
             transform.position = new Vector3(_LookAtObject.transform.position.x, _LookAtObject.transform.position.y - .5f, _LookAtObject.transform.position.z);
         }

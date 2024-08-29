@@ -5,10 +5,6 @@ using Photon.Pun;
 using UnityEngine.UI;
 
 public class PlayerManager : MonoBehaviourPunCallbacks{
-
-	// public delegate void OnHit(float val, string name);
-	//
-	// public static OnHit onHit;
 	
 	public int[] viewID;
 	public Color32[] colors;
@@ -130,7 +126,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks{
 					_animator.SetBool("isHit", true);
 					_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount -= damageAmount;
 					val = _nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount;
-					//onHit?.Invoke(_nicknamesScript.healthbars[i].gameObject.GetComponent<Image>().fillAmount,name);
 					showDamage(name);
 					return;
 				}

@@ -28,8 +28,6 @@ public class WeaponManager : MonoBehaviour{
     public float[] damageAmount;
     public bool isDead = false;
     
-    // private GameObject camObject;
-    // private CinemachineVirtualCamera cam;
     private GameObject aimTarget;
     private GameObject choosePanel;
     private GameObject testForWeapons;
@@ -50,22 +48,11 @@ public class WeaponManager : MonoBehaviour{
         ammoAmounts[2] = 0;
         ammoAmountText.text = ammoAmounts[0].ToString();
         
-        // if (_photonView.IsMine) {
-        //     cam = camObject.GetComponent<CinemachineVirtualCamera>();
-        //     cam.Follow = gameObject.transform;
-        //     cam.LookAt = gameObject.transform;
-        //     //Invoke("SetLookAt", 0.1f);
-        // }
-        // else {
-        //     gameObject.GetComponent<PlayerMovement>().enabled = false;
-        // }
         
         testForWeapons = GameObject.Find("WeaponPickUp1(Clone)");
         
         if (!testForWeapons) {
             if (_photonView.Owner.IsMasterClient) {
-                // var spawner = GameObject.Find("SpawnManager");
-                // spawner.GetComponent<SpawnManager>().SpawnWeaponStart();
                 OnNoWeaponsFound?.Invoke();
             }
         }

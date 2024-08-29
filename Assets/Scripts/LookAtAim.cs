@@ -13,18 +13,14 @@ public class LookAtAim : MonoBehaviour
     public GameObject crosshair;
 
     private void Start(){
-	    // Draw crosshair on screen
-	    screenPosition = new Vector3(Screen.width * 0.5f, (Screen.height * 0.5f) - 50f, 2f);   //Input.mousePosition; + 15f
+	    // Place crosshair on screen
+	    screenPosition = new Vector3(Screen.width * 0.5f, (Screen.height * 0.5f) - 50f, 2f);  
         crosshair.transform.position = new Vector3(screenPosition.x, screenPosition.y, 0);
     }
 
     void FixedUpdate(){
-       
-       // screenPosition.z = 6f;
-       
-        // get world position of crosshair
+	    
         _worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
-        //_worldPosition.y = Input.mousePosition.y;
         transform.position = _worldPosition;
 		
         

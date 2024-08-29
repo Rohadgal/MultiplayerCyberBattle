@@ -49,7 +49,6 @@ public class LobbyScript : MonoBehaviourPunCallbacks
     }
 
     public override void OnJoinRandomFailed(short returnCode, string message){
-        //Debug.Log("Joined random room failed, creating a new room");
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = 6;
         roomOptions.IsVisible = true;
